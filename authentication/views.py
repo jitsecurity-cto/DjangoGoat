@@ -16,22 +16,22 @@ from .forms import UserProfileForm
 from .models import UserProfile
 
 
-@public
-def sign_up(request):
-    if request.method == 'POST':
-        form = UserCreationForm(request.POST)
-        if form.is_valid():
-            new_user = form.save()
-            UserProfile.objects.create(user=new_user)
-            username = form.cleaned_data.get('username')
-            raw_password = form.cleaned_data.get('password1')
-            user = authenticate(username=username, password=raw_password)
-            login(request, user)
-            return redirect('profile', pk=user.pk)
-    else:
-        form = UserCreationForm()
+# @public
+# def sign_up(request):
+#     if request.method == 'POST':
+#         form = UserCreationForm(request.POST)
+#         if form.is_valid():
+#             new_user = form.save()
+#             UserProfile.objects.create(user=new_user)
+#             username = form.cleaned_data.get('username')
+#             raw_password = form.cleaned_data.get('password1')
+#             user = authenticate(username=username, password=raw_password)
+#             login(request, user)
+#             return redirect('profile', pk=user.pk)
+#     else:
+#         form = UserCreationForm()
 
-    return render(request, 'sign_up.html', {'form': form})
+#     return render(request, 'sign_up.html', {'form': form})
 
 
 @public
