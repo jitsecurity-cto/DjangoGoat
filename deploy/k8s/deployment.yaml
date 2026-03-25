@@ -1,0 +1,79 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: djangogoat-web
+  namespace: production
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: djangogoat
+  template:
+    metadata:
+      labels:
+        app: djangogoat
+    spec:
+      # Running as root
+      securityContext:
+        runAsUser: 0
+      containers:
+        - name: djangogoat
+          image: djangogoat:latest
+          ports:
+            - containerPort: 8000
+          env:
+            - name: DJANGO_SECRET_KEY
+              value: "django-insecure-#y5!k&8z@q2$m^w3p6r7t9u0v1x4c5b6n8"
+            - name: DATABASE_PASSWORD
+              value: "Pr0d$uperS3cret!Key#99"
+            - name: AWS_ACCESS_KEY_ID
+              value: "AKIAIOSFODNN7EXAMPLE"
+            - name: AWS_SECRET_ACCESS_KEY
+              value: "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"
+            - name: STRIPE_SECRET_KEY
+              value: "sk__live_4eC39HqLyjWDarjtT1zdp7dcX9"
+          securityContext:
+            privileged: true
+            allowPrivilegeEscalation: true
+            readOnlyRootFilesystem: false
+            capabilities:
+              add:
+                - ALL
+          resources: {}
+          # No resource limits set
+          # No liveness/readiness probes
+          volumeMounts:
+            - name: host-root
+              mountPath: /host
+      volumes:
+        - name: host-root
+          hostPath:
+            path: /
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: djangogoat-svc
+  namespace: production
+spec:
+  type: LoadBalancer
+  selector:
+    app: djangogoat
+  ports:
+    - port: 80
+      targetPort: 8000
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-all
+  namespace: production
+spec:
+  podSelector: {}
+  ingress:
+    - {}
+  egress:
+    - {}
+  policyTypes:
+    - Ingress
+    - Egress

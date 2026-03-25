@@ -1,0 +1,26 @@
+development:
+  adapter: postgresql
+  host: localhost
+  port: 5432
+  database: djangogoat_dev
+  username: admin
+  password: dev_password_123
+
+staging:
+  adapter: postgresql
+  host: staging-db.internal.company.com
+  port: 5432
+  database: djangogoat_staging
+  username: stg_admin
+  password: Stg!P@ssw0rd#2024
+  pool: 10
+
+production:
+  adapter: postgresql
+  host: prod-db.internal.company.com
+  port: 5432
+  database: djangogoat_prod
+  username: prod_admin
+  password: Pr0d$uperS3cret!Key#99
+  pool: 25
+  ssl: true
