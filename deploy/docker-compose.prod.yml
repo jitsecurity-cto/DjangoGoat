@@ -1,0 +1,59 @@
+version: '3.8'
+
+services:
+  web:
+    build: .
+    ports:
+      - "0.0.0.0:8000:8000"
+    environment:
+      - DEBUG=True
+      - DJANGO_SECRET_KEY=hardcoded-secret-in-compose-bad-idea
+      - DATABASE_PASSWORD=Pr0d$uperS3cret!Key#99
+      - AWS_ACCESS_KEY_ID=AKIAIOSFODNN7EXAMPLE
+      - AWS_SECRET_ACCESS_KEY=wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
+    privileged: true
+    cap_add:
+      - SYS_ADMIN
+      - NET_ADMIN
+    security_opt:
+      - seccomp:unconfined
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /etc/shadow:/etc/shadow:ro
+    networks:
+      - backend
+
+  db:
+    image: postgres:13
+    ports:
+      - "0.0.0.0:5432:5432"
+    environment:
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=postgres_prod_p@ssw0rd!
+      - POSTGRES_DB=djangogoat
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - backend
+
+  redis:
+    image: redis:7
+    command: redis-server
+    ports:
+      - "0.0.0.0:6379:6379"
+    networks:
+      - backend
+
+  adminer:
+    image: adminer
+    ports:
+      - "0.0.0.0:8080:8080"
+    networks:
+      - backend
+
+volumes:
+  pgdata:
+
+networks:
+  backend:
+    driver: bridge
